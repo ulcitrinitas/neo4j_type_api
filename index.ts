@@ -6,23 +6,47 @@ async function conn_neo4j(db_uri: string, user: string, pass: string) {
     
     const serverInfo = await driver.getServerInfo();
 
+    let dbname = "234f3135"
+
     console.log("Conectado com o banco de dados");
     console.log(serverInfo);
 
-    let { records, summary } = await driver.executeQuery(
+    // Criando nós no banco de dados
+    let { _ , summary } = await driver.executeQuery(
         `
         CREATE (a:Person {name: $name})
         CREATE (b:Person {name: $friendName})
         CREATE (a)-[:KNOWS]->(b)
         `,
-        {name: "Alice", friendName: "Bob"},
-        {database: "234f3135"}
+        {name: "Ana", friendName: "João"},
+        {database: dbname}
     );
 
     console.log(
         `Created ${summary.counters.updates().nodesCreated} nodes` +
         `in ${summary.resultAvailableAfter} ms.`
     );
+
+    // Pegando os dados no banco
+    let { records , sumary } = await driver.executeQuery(
+        `
+        MATCH (p:Person)-[:KNOWS]->(:Person)
+        RETURN p.name AS name
+        `,
+        {},
+        {database: dbname}
+    );
+
+    // loop para mostrar os dados
+    for(let record of records){
+        console.log(`Person with name: ${record.get('name')}`)
+        console.log(`Available properties for this node are: ${record.keys}\n`)
+    }
+
+    console.log(
+        `The query \`${summary.query.text}\` ` +
+        `returned ${records.length} nodes.\n`
+      )
 
     await driver.close();
 }
