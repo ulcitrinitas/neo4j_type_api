@@ -1,3 +1,5 @@
+import { type Person } from './person.ts'
+
 const neo4j = require("neo4j-driver");
 
 async function conn_neo4j(db_uri: string, user: string, pass: string) {
@@ -11,6 +13,11 @@ async function conn_neo4j(db_uri: string, user: string, pass: string) {
     console.log("Conectado com o banco de dados");
     console.log(serverInfo);
 
+    return driver;
+}
+
+async function createPerson(data: Person, driver: any, dbname: string){
+
     // Criando nós no banco de dados
     let { _ , summary } = await driver.executeQuery(
         `
@@ -18,7 +25,7 @@ async function conn_neo4j(db_uri: string, user: string, pass: string) {
         CREATE (b:Person {name: $friendName})
         CREATE (a)-[:KNOWS]->(b)
         `,
-        {name: "Ana", friendName: "João"},
+        {name: data.name, friendName: data.friendName},
         {database: dbname}
     );
 
@@ -26,9 +33,12 @@ async function conn_neo4j(db_uri: string, user: string, pass: string) {
         `Created ${summary.counters.updates().nodesCreated} nodes` +
         `in ${summary.resultAvailableAfter} ms.`
     );
+    
+}
 
-    // Pegando os dados no banco
-    let { records , sumary } = await driver.executeQuery(
+async function getPerson(driver: any, dbname: string){
+     // Pegando os dados no banco
+     let { records , summary } = await driver.executeQuery(
         `
         MATCH (p:Person)-[:KNOWS]->(:Person)
         RETURN p.name AS name
@@ -47,8 +57,27 @@ async function conn_neo4j(db_uri: string, user: string, pass: string) {
         `The query \`${summary.query.text}\` ` +
         `returned ${records.length} nodes.\n`
       )
-
-    await driver.close();
 }
 
-conn_neo4j("neo4j+s://234f3135.databases.neo4j.io", "234f3135", "5T6b96J_IVh4ajQLHJc5hW4CCfsbmTiTgAkNKMNiDOU");
+async function close_conn(driver: any) {
+
+    await driver.close();
+    
+    console.log("Fechando conexão...");
+}
+
+const conn = conn_neo4j("neo4j+s://234f3135.databases.neo4j.io", "234f3135", "5T6b96J_IVh4ajQLHJc5hW4CCfsbmTiTgAkNKMNiDOU");
+
+const dbname = "234f3135";
+
+let person = {
+    name: "Willian",
+    age: 28,
+    friendName: "Alice"
+};
+
+createPerson(person, conn, dbname);
+getPerson(conn, dbname);
+
+close_conn(conn);
+
