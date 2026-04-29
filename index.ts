@@ -9,6 +9,21 @@ async function conn_neo4j(db_uri: string, user: string, pass: string) {
     console.log("Conectado com o banco de dados");
     console.log(serverInfo);
 
+    let { records, summary } = await driver.executeQuery(
+        `
+        CREATE (a:Person {name: $name})
+        CREATE (b:Person {name: $friendName})
+        CREATE (a)-[:KNOWS]->(b)
+        `,
+        {name: "Alice", friendName: "Bob"},
+        {database: "234f3135"}
+    );
+
+    console.log(
+        `Created ${summary.counters.updates().nodesCreated} nodes` +
+        `in ${summary.resultAvailableAfter} ms.`
+    );
+
     await driver.close();
 }
 
