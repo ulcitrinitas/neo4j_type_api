@@ -19,7 +19,7 @@ async function conn_neo4j(db_uri: string, user: string, pass: string) {
 async function createPerson(data: Person, driver: any, dbname: string){
 
     // Criando nós no banco de dados
-    let { _ , summary } = await driver.executeQuery(
+    let { records , summary } = await driver.executeQuery(
         `
         CREATE (a:Person {name: $name})
         CREATE (b:Person {name: $friendName})
