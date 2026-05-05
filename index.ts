@@ -13,7 +13,13 @@ async function conn_neo4j(db_uri: string, user: string, pass: string) {
     console.log("Conectado com o banco de dados");
     console.log(serverInfo);
 
-    return driver;
+    await driver.close();
+
+    return {
+        db_uri,
+        user,
+        pass
+    };
 }
 
 async function createPerson(data: Person, driver: any, dbname: string){
