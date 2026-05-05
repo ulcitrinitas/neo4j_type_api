@@ -1,4 +1,5 @@
 import { type Person } from './person.ts'
+import { type Crendenciais } from './crend.ts'
 
 const neo4j = require("neo4j-driver");
 
