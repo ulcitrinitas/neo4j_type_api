@@ -19,11 +19,14 @@ async function conn_neo4j(db_uri: string, user: string, pass: string) {
     return {
         db_uri,
         user,
-        pass
+        pass,
+        dbname
     };
 }
 
-async function createPerson(data: Person, driver: any, dbname: string){
+async function createPerson(data: Person, crend_db: Crendenciais){
+
+    const driver = neo4j.driver(crend_db.db_uri, neo4j.auth.basic(crend_db.user, crend_db.pass));
 
     // Criando nós no banco de dados
     let { records , summary } = await driver.executeQuery(
@@ -33,25 +36,30 @@ async function createPerson(data: Person, driver: any, dbname: string){
         CREATE (a)-[:KNOWS]->(b)
         `,
         {name: data.name, friendName: data.friendName},
-        {database: dbname}
+        {database: crend_db.dbname}
     );
 
     console.log(
         `Created ${summary.counters.updates().nodesCreated} nodes` +
         `in ${summary.resultAvailableAfter} ms.`
     );
+
+    await driver.close();
     
 }
 
-async function getPerson(driver: any, dbname: string){
-     // Pegando os dados no banco
-     let { records , summary } = await driver.executeQuery(
+async function getPerson(crend_db: Crendenciais){
+
+    const driver = neo4j.driver(crend_db.db_uri, neo4j.auth.basic(crend_db.user, crend_db.pass));
+
+    // Pegando os dados no banco
+    let { records , summary } = await driver.executeQuery(
         `
         MATCH (p:Person)-[:KNOWS]->(:Person)
         RETURN p.name AS name
         `,
         {},
-        {database: dbname}
+        {database: crend_db.dbname}
     );
 
     // loop para mostrar os dados
@@ -64,18 +72,12 @@ async function getPerson(driver: any, dbname: string){
         `The query \`${summary.query.text}\` ` +
         `returned ${records.length} nodes.\n`
       )
-}
-
-async function close_conn(driver: any) {
 
     await driver.close();
-    
-    console.log("Fechando conexão...");
 }
 
-const conn = conn_neo4j("neo4j+s://234f3135.databases.neo4j.io", "234f3135", "5T6b96J_IVh4ajQLHJc5hW4CCfsbmTiTgAkNKMNiDOU");
 
-const dbname = "234f3135";
+const conn_crend = conn_neo4j("neo4j+s://234f3135.databases.neo4j.io", "234f3135", "5T6b96J_IVh4ajQLHJc5hW4CCfsbmTiTgAkNKMNiDOU");
 
 let person = {
     name: "Willian",
@@ -83,8 +85,6 @@ let person = {
     friendName: "Alice"
 };
 
-createPerson(person, conn, dbname);
-getPerson(conn, dbname);
-
-close_conn(conn);
+createPerson(person, conn_crend);
+getPerson(conn_crend);
 
