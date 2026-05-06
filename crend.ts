@@ -1,4 +1,4 @@
-export type Crendenciais = {
+export interface Crendenciais {
     db_uri: string,
     user: string,
     pass: string,
