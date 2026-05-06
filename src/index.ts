@@ -94,11 +94,11 @@ console.log(`Credencias executadas: ${JSON.stringify(creds)}`);
 
 getPerson(creds);
 
-// let person = {
-//     name: "Willian",
-//     age: 28,
-//     friendName: "Alice"
-// };
+let person = {
+    name: "Willian",
+    age: 28,
+    friendName: "Alice"
+};
 
-// createPerson(person, creds);
-// 
+createPerson(person, creds);
+
