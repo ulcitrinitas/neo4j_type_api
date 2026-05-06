@@ -3,40 +3,27 @@ import type { Crendenciais } from './crend.ts';
 
 const neo4j = require("neo4j-driver");
 
-async function conn_neo4j(db_uri: string, user: string, pass: string, creds: Crendenciais) {
+async function test_conn_neo4j(creds: Crendenciais) {
 
   try {
     
-    let driver = neo4j.driver(db_uri, neo4j.auth.basic(user, pass));
+    let driver = neo4j.driver(creds.db_uri, neo4j.auth.basic(creds.user, creds.pass));
     
     const serverInfo = await driver.getServerInfo();
-
-    let dbname = "234f3135"
 
     console.log("Conectado com o banco de dados");
     console.log(serverInfo);
 
     await driver.close();
 
-    creds =   {
-        db_uri,
-        user,
-        pass,
-        dbname
-    };
+    console.log(`Credencias executadas (conn): ${JSON.stringify(creds)}`);
 
   } catch (error) {
 
     console.log("Erro! Não foi possível conectar ao banco...");
     console.log(error);
 
-    // Para manter a consistência dos objetos
-    creds =  {
-        db_uri: "",
-        user: "",
-        pass: "",
-        dbname: ""
-    };
+    console.log(`Credencias executadas (conn catch): ${JSON.stringify(creds)}`);
     
   }
 }
@@ -94,18 +81,14 @@ async function getPerson(crend_db: Crendenciais){
 }
 
 
-let creds: Crendenciais = {
-    db_uri: "",
-    user: "",
-    pass: "",
-    dbname: ""
+const creds: Crendenciais =   {
+    db_uri: "neo4j+s://234f3135.databases.neo4j.io",
+    user: "234f3135",
+    pass: "5T6b96J_IVh4ajQLHJc5hW4CCfsbmTiTgAkNKMNiDOU",
+    dbname: "234f3135"
 };
 
-conn_neo4j("neo4j+s://234f3135.databases.neo4j.io", "234f3135", "5T6b96J_IVh4ajQLHJc5hW4CCfsbmTiTgAkNKMNiDOU", creds);
-
-if(creds.db_uri == "" || creds.user == ""){
-    throw "Erro! Problema ao conectar ao banco de dados";
-}
+test_conn_neo4j(creds);
 
 console.log(`Credencias executadas: ${JSON.stringify(creds)}`);
 
