@@ -5,6 +5,8 @@ const neo4j = require("neo4j-driver");
 
 async function conn_neo4j(db_uri: string, user: string, pass: string) {
 
+  try {
+    
     let driver = neo4j.driver(db_uri, neo4j.auth.basic(user, pass));
     
     const serverInfo = await driver.getServerInfo();
@@ -22,6 +24,15 @@ async function conn_neo4j(db_uri: string, user: string, pass: string) {
         pass,
         dbname
     };
+
+  } catch (error) {
+
+    console.log("Erro! Não foi possível conectar ao banco...");
+    console.log(error);
+
+    return {};
+    
+  }
 }
 
 async function createPerson(data: Person, crend_db: Crendenciais){
@@ -77,7 +88,9 @@ async function getPerson(crend_db: Crendenciais){
 }
 
 
-const conn_crend = conn_neo4j("neo4j+s://234f3135.databases.neo4j.io", "234f3135", "5T6b96J_IVh4ajQLHJc5hW4CCfsbmTiTgAkNKMNiDOU");
+const connCrendPromisse = conn_neo4j("neo4j+s://234f3135.databases.neo4j.io", "234f3135", "5T6b96J_IVh4ajQLHJc5hW4CCfsbmTiTgAkNKMNiDOU");
+
+
 
 let person = {
     name: "Willian",
