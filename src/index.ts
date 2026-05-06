@@ -92,6 +92,8 @@ test_conn_neo4j(creds);
 
 console.log(`Credencias executadas: ${JSON.stringify(creds)}`);
 
+getPerson(creds);
+
 // let person = {
 //     name: "Willian",
 //     age: 28,
@@ -99,4 +101,4 @@ console.log(`Credencias executadas: ${JSON.stringify(creds)}`);
 // };
 
 // createPerson(person, creds);
-// getPerson(creds);
+// 
