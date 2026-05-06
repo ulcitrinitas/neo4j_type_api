@@ -107,11 +107,13 @@ if(creds.db_uri == "" || creds.user == ""){
     throw "Erro! Problema ao conectar ao banco de dados";
 }
 
-let person = {
-    name: "Willian",
-    age: 28,
-    friendName: "Alice"
-};
+console.log(`Credencias executadas: ${JSON.stringify(creds)}`);
 
-createPerson(person, creds);
-getPerson(creds);
+// let person = {
+//     name: "Willian",
+//     age: 28,
+//     friendName: "Alice"
+// };
+
+// createPerson(person, creds);
+// getPerson(creds);
