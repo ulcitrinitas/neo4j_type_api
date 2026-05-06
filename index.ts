@@ -1,9 +1,9 @@
-import { type Person } from './person.ts'
-import { type Crendenciais } from './crend.ts'
+import type { Person } from './person.ts'
+import type { Crendenciais } from './crend.ts';
 
 const neo4j = require("neo4j-driver");
 
-async function conn_neo4j(db_uri: string, user: string, pass: string) {
+async function conn_neo4j(db_uri: string, user: string, pass: string, creds: Crendenciais) {
 
   try {
     
@@ -18,7 +18,7 @@ async function conn_neo4j(db_uri: string, user: string, pass: string) {
 
     await driver.close();
 
-    return {
+    creds =   {
         db_uri,
         user,
         pass,
@@ -30,7 +30,13 @@ async function conn_neo4j(db_uri: string, user: string, pass: string) {
     console.log("Erro! Não foi possível conectar ao banco...");
     console.log(error);
 
-    return {};
+    // Para manter a consistência dos objetos
+    creds =  {
+        db_uri: "",
+        user: "",
+        pass: "",
+        dbname: ""
+    };
     
   }
 }
@@ -88,9 +94,18 @@ async function getPerson(crend_db: Crendenciais){
 }
 
 
-const connCrendPromisse = conn_neo4j("neo4j+s://234f3135.databases.neo4j.io", "234f3135", "5T6b96J_IVh4ajQLHJc5hW4CCfsbmTiTgAkNKMNiDOU");
+let creds: Crendenciais = {
+    db_uri: "",
+    user: "",
+    pass: "",
+    dbname: ""
+};
 
+conn_neo4j("neo4j+s://234f3135.databases.neo4j.io", "234f3135", "5T6b96J_IVh4ajQLHJc5hW4CCfsbmTiTgAkNKMNiDOU", creds);
 
+if(creds.db_uri == "" || creds.user == ""){
+    throw "Erro! Problema ao conectar ao banco de dados";
+}
 
 let person = {
     name: "Willian",
@@ -98,6 +113,5 @@ let person = {
     friendName: "Alice"
 };
 
-createPerson(person, conn_crend);
-getPerson(conn_crend);
-
+createPerson(person, creds);
+getPerson(creds);
